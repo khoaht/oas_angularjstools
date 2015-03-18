@@ -1,0 +1,9 @@
+﻿<div class="form-group">
+	<label class="control-label col-md-3">{1}</label>
+	<div class="col-md-9">
+		<input type="number" name="{1}" class="form-control" data-ng-model="vm.{0}.{1}" required />
+		<span class="errorMessage" ng-show="itemForm.{1}.$touched && itemForm.{1}.$invalid">
+			{1} is required
+		</span>
+	</div>
+</div>

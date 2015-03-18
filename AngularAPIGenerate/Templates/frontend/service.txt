@@ -1,0 +1,56 @@
+﻿'use strict';
+
+define(['app'], function (app) {
+    var injectParams = ['$http', '$q'];
+
+    var [@TableName]Factory = function ($http, $q) {
+        var serviceBase = '/api/[@ObjectName]';
+        var factory = {};
+
+        factory.insert[@DomainName] = function (p[@ObjectName]) {
+            return $http.post(serviceBase + "/add[@DomainName]", p[@ObjectName]).then(function (results) {
+                p[@ObjectName].Id = results.data.id;
+                return results.data;
+            });
+        }
+
+        factory.update[@DomainName] = function (p[@ObjectName]) {
+            return $http.put(serviceBase + "/update[@DomainName]", p[@ObjectName]).then(function (results) {
+                p[@ObjectName].Id = results.data.id;
+                return results.data;
+            });
+        }
+
+
+        factory.delete[@DomainName] = function (id) {
+            return $http.delete(serviceBase + '/delete[@DomainName]/' + id).then(function (status) {
+                return status.data;
+            });
+        }
+
+        factory.get[@DomainName] = function (id) {
+            return $http.get(serviceBase + '/get[@DomainName]ById/' + id).then(function (results) {
+                return results.data;
+            });
+        }
+
+		factory.get[@TableName] = function () {
+            return $http.get(serviceBase + '/get[@TableName]').then(function (results) {
+                return results.data;
+            });
+        }
+
+        factory.search[@DomainName] = function ([@ObjectName]Criteria) {
+            return $http.post(serviceBase + "/search[@DomainName]", [@ObjectName]Criteria).then(function (response) {
+                return response;
+            });
+        };
+
+
+        return factory;
+
+    }
+
+    [@TableName]Factory.$inject = injectParams;
+    app.factory('[@TableNameLower]Service', [@TableName]Factory)
+});

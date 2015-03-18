@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web;
+using System.Web.Http;
+using Oas.Infrastructure.Criteria;
+using Oas.Infrastructure.Services;
+using Oas.Infrastructure.Domain;
+
+namespace Oas.LV2015.Controllers
+{
+    public partial class [@DomainName]Controller : ApiController
+    {
+        #region fields
+        private readonly I[@DomainName]Service [@ObjectName]Service = null;
+        #endregion
+		
+		#region constructors
+        
+		public [@DomainName]Controller(I[@DomainName]Service [@ObjectName]Service)
+        {
+            this.[@ObjectName]Service = [@ObjectName]Service;
+        }
+		
+		#endregion
+
+		#region public methods
+		
+		[HttpGet]
+        public HttpResponseMessage Get[@DomainName]ById(Guid? id)
+        {
+            var obj[@DomainName] = [@ObjectName]Service.Get[@DomainName](id??Guid.Empty);
+            return Request.CreateResponse(HttpStatusCode.OK, obj[@DomainName]);
+        }
+
+		[HttpGet]
+        public HttpResponseMessage Get[@TableName]()
+        {
+            var obj[@DomainName] = [@ObjectName]Service.Get[@TableName]().ToList();
+            return Request.CreateResponse(HttpStatusCode.OK, obj[@DomainName]);
+        }
+		
+        [HttpPost]
+        public HttpResponseMessage Search[@DomainName]([@DomainName]Criteria criteria)
+        {
+            int totalRecords = 0;
+            var rooms = [@ObjectName]Service.Search[@DomainName](criteria, ref totalRecords);
+            HttpContext.Current.Response.Headers.Add("X-InlineCount", totalRecords.ToString());
+            return Request.CreateResponse(HttpStatusCode.OK, rooms.ToList());
+
+        }		
+		
+		[HttpPut]
+        public HttpResponseMessage Update[@DomainName]([@DomainName] p[@ObjectName])
+        {
+            var opStatus = [@ObjectName]Service.Update[@DomainName](p[@ObjectName]);
+            if (opStatus.Status)
+            {
+                return Request.CreateResponse<[@DomainName]>(HttpStatusCode.Accepted, p[@ObjectName]);
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotModified, opStatus.ExceptionMessage);
+        }
+		
+		[HttpPost]
+        public HttpResponseMessage Add[@DomainName]([@DomainName] p[@ObjectName])
+        {
+            p[@ObjectName].Id = Guid.NewGuid();
+            var opStatus = [@ObjectName]Service.Add[@DomainName](p[@ObjectName]);
+            if (opStatus.Status)
+            {
+                var response = Request.CreateResponse<[@DomainName]>(HttpStatusCode.Created, p[@ObjectName]);
+                string uri = Url.Link("DefaultApi", new { id = p[@ObjectName].Id });
+                response.Headers.Location = new Uri(uri);
+                return response;
+            }
+            return Request.CreateErrorResponse(HttpStatusCode.NotFound, opStatus.ExceptionMessage);
+        }
+
+		public HttpResponseMessage Delete[@DomainName](Guid id)
+        {
+            var opStatus = [@ObjectName]Service.Delete[@DomainName](id);
+
+            if (opStatus.Status)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, opStatus.ExceptionMessage);
+            }
+        }
+		
+		#endregion
+    }
+}

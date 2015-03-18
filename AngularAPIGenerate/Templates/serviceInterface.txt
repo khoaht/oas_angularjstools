@@ -1,0 +1,31 @@
+using Oas.Infrastructure.Criteria;
+using Oas.Infrastructure.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Oas.Infrastructure.Services
+{
+    public interface I[@DomainName]Service
+    {
+        #region [@DomainName]
+
+        IQueryable<[@DomainName]> Get[@TableName]();
+
+        IQueryable<[@DomainName]> Search[@DomainName]([@DomainName]Criteria criteria, ref int totalRecords);
+
+        [@DomainName] Get[@DomainName](Guid [@ObjectName]Id);
+
+        OperationStatus Add[@DomainName]([@DomainName] p[@ObjectName]);
+
+        OperationStatus Update[@DomainName]([@DomainName] p[@ObjectName]);
+
+        OperationStatus Delete[@DomainName](Guid [@ObjectName]Id);
+
+        #endregion
+
+
+    }
+}

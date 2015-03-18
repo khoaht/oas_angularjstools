@@ -1,0 +1,22 @@
+﻿<div class="form-group">
+    <div class="col-md-2">
+        {1}:
+    </div>
+    <div class="col-md-10">
+        <!-- allowInvalid added below so that the model isn't wiped
+        out (the default behavior) if email is determined to be invalid due to being a duplicate-->
+        <input type="text" name="{1}"
+                class="form-control"
+                data-ng-model="vm.{0}.{1}"
+                data-ng-model-options="{ updateOn: 'blur', allowInvalid: true }"
+                data-wc-unique
+                data-wc-unique-key="{{vm.{0}.id}}"
+                data-wc-unique-property="email"
+                data-ng-minlength="3"
+                required />
+        <!-- Show error if touched and unique is in error -->
+        <span class="errorMessage" ng-show="itemForm.{1}.$touched && itemForm.{1}.$error.unique">
+            {1} already in use
+        </span>
+    </div>
+</div>

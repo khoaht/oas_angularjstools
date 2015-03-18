@@ -1,0 +1,124 @@
+using Oas.Infrastructure.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.Entity;
+using Oas.Infrastructure.Criteria;
+
+namespace Oas.Infrastructure.Services
+{
+    public partial class [@DomainName]Service : I[@DomainName]Service
+    {
+        #region fields
+        private readonly IRepository<[@DomainName]> [@ObjectName]Repository;
+        #endregion
+
+		#region constructors
+        public [@DomainName]Service(IRepository<[@DomainName]> [@ObjectName]Repository)
+        {
+            this.[@ObjectName]Repository = [@ObjectName]Repository;
+        }
+		#endregion
+
+        #region public methods
+
+        public IQueryable<[@DomainName]> Search[@DomainName]([@DomainName]Criteria criteria, ref int totalRecords)
+        {
+            var query = [@ObjectName]Repository
+                       .Get
+						/*[@InClude]*/
+						/*[@Condition]*/
+                       .AsQueryable();
+
+            totalRecords = query.Count();
+
+            criteria.SortColumn = string.IsNullOrEmpty(criteria.SortColumn) ? string.Empty : criteria.SortColumn.ToLower();
+            bool isAsc = criteria.SortDirection.ToLower().Equals("false");
+           
+		   /*[@Sorting]*/
+		   
+            query = query.Skip(criteria.CurrentPage * criteria.ItemPerPage).Take(criteria.ItemPerPage);
+
+            return query;
+        }
+
+        public IQueryable<[@DomainName]> Get[@TableName]()
+        {
+            return [@ObjectName]Repository
+                        .Get
+						/*[@InClude]*/
+                        .AsQueryable();
+
+        }
+
+        public [@DomainName] Get[@DomainName](Guid [@ObjectName]Id)
+        {
+            return [@ObjectName]Repository
+                        .Get
+						/*[@InClude]*/
+                        .FirstOrDefault(t => t.Id.Equals([@ObjectName]Id));
+        }
+
+        public OperationStatus Add[@DomainName]([@DomainName] p[@DomainName])
+        {
+            var opStatus = new OperationStatus { Status = true };
+            try
+            {
+                [@ObjectName]Repository.Add(p[@DomainName]);
+                [@ObjectName]Repository.Commit();
+            }
+            catch (Exception exp)
+            {
+                opStatus.Status = false;
+                opStatus.ExceptionMessage = exp.Message;
+            }
+            return opStatus;
+        }
+
+        public OperationStatus Update[@DomainName]([@DomainName] p[@DomainName])
+        {
+            var opStatus = new OperationStatus { Status = true };
+            try
+            {
+                [@ObjectName]Repository.Update(p[@DomainName]);
+                [@ObjectName]Repository.Commit();
+            }
+            catch (Exception exp)
+            {
+                opStatus.Status = false;
+                opStatus.ExceptionMessage = exp.Message;
+            }
+            return opStatus;
+        }
+
+        public OperationStatus Delete[@DomainName](Guid [@ObjectName]Id)
+        {
+            var opStatus = new OperationStatus { Status = true };
+            try
+            {
+                var del[@ObjectName] = [@ObjectName]Repository.Get.SingleOrDefault(t => t.Id.Equals([@ObjectName]Id));
+                if (del[@ObjectName] != null)
+                {
+                    [@ObjectName]Repository.Remove(del[@ObjectName]);
+                    [@ObjectName]Repository.Commit();
+                }
+                else
+                {
+                    opStatus.Status = false;
+                    opStatus.ExceptionMessage = "[@DomainName] not found";
+                }
+            }
+            catch (Exception exp)
+            {
+                opStatus.Status = false;
+                opStatus.ExceptionMessage = exp.Message;
+            }
+            return opStatus;
+        }
+
+        #endregion
+
+    }
+}

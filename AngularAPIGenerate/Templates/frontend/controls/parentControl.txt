@@ -1,0 +1,11 @@
+﻿<div class="form-group">
+<label class="control-label col-md-3">{1}</label>
+    <div class="col-md-9">
+        <select ng-options="item.Id as item.Name for item in vm.{1}" required name="{1}" ng-model="vm.{2}.{3}" class="form-control">
+            <option value="">--- Bấm vào để chọn ---</option>
+        </select>
+        <span class="errorMessage" ng-show="carForm.{3}.$touched && carForm.{3}.$invalid">
+            Thông tin này bắt buộc
+        </span>
+    </div>
+</div>

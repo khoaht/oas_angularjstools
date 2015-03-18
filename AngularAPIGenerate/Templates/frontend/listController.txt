@@ -1,0 +1,174 @@
+﻿'use strict';
+
+define(['app'], function (app) {
+
+    var injectParams = ['$scope', '$filter','authService', '$location', '$window',
+                        '$timeout', '[@TableNameLower]Service', 'modalService'];
+
+    var [@TableName]Controller = function ($scope, $filter,authService, $location, $window,
+        $timeout, [@TableNameLower]Service, modalService) {
+
+        var vm = this;
+        vm.[@TableNameLower] = [];
+        vm.filtered[@TableName] = [];
+        vm.filteredCount = 0;
+        vm.currentPage = 1;
+        vm.itemPerPage = 10;
+        vm.totalRecords = 0;
+        vm.errorMessage = "";
+        vm.sortDirection = "asc";
+        vm.columnName = "name";
+
+        vm.searchText = "";
+        vm.cardAnimationClass = '.card-animation';
+        vm.DisplayModeEnum = {            
+            List: 0,
+            Card: 1
+        };
+
+
+		vm.navigate = function (url) {
+            $location.path(url);
+        };
+
+
+        vm.changeDisplayMode = function (displayMode) {
+
+            switch (displayMode) {
+                case vm.DisplayModeEnum.Card:
+                    vm.listDisplayModeEnabled = false;
+                    break;
+                case vm.DisplayModeEnum.List:
+                    vm.listDisplayModeEnabled = true;
+                    break;
+            }
+        };
+
+        function processError(error) {
+            vm.errorMessage = error.message;
+            alert(error);
+        };
+
+        /*region ==> Get Data*/
+
+        vm.searchTextChanged = function () {
+            filter[@TableName](vm.searchText);
+        };
+
+
+        function initalData() {
+            vm.currentPage = 1;
+            get[@TableName]();
+        }
+
+
+        vm.pageChanged = function (page) {
+            vm.currentPage = page;
+            get[@TableName]();
+        }
+
+
+        function filter[@TableName](filterText) {
+            
+            vm.filtered[@TableName] = $filter("[@TableNameLower]Filter")(vm.[@TableNameLower], filterText);
+            vm.filteredCount = vm.filtered[@TableName].length;
+        }
+
+		vm.edit[@DomainName] = function (id) {
+            if (!authService.user.isAuthenticated) {
+                $location.path(authService.loginPath + $location.$$path);
+                return;
+            }
+			 
+             $location.path('/[@ObjectName]Item/'+id);
+        };
+
+		vm.delete[@DomainName] = function (id) {
+            if (!authService.user.isAuthenticated) {
+                $location.path(authService.loginPath + $location.$$path);
+                return;
+            }
+
+            var p[@ObjectName] = get[@DomainName]ById(id);
+            var [@ObjectName]Name = p[@ObjectName].Name==undefined ? '[@ObjectName]': p[@ObjectName].Name;
+
+            var modalOptions = {
+                closeButtonText: 'Cancel',
+                actionButtonText: 'Delete [@DomainName]',
+                headerText: 'Delete ' + [@ObjectName]Name + '?',
+                bodyText: 'Are you sure you want to delete this '+[@ObjectName]Name+' ?'
+            };
+
+            modalService.showModal({}, modalOptions).then(function (result) {
+                if (result === 'ok') {
+                    [@TableNameLower]Service.delete[@DomainName](id).then(function () {
+                        for (var i = 0; i < vm.[@TableNameLower].length; i++) {
+                            if (vm.[@TableNameLower][i].Id === id) {
+                                vm.[@TableNameLower].splice(i, 1);
+                                break;
+                            }
+							if (vm.filtered[@TableName][i].Id === id) {
+                                vm.filtered[@TableName].splice(i, 1);
+                                break;
+                            }
+                        }
+                        filter[@TableName](vm.searchText);
+                    }, function (error) {
+                        $window.alert('Error deleting [@ObjectName]: ' + error.message);
+                    });
+                }
+            });
+        };
+
+		function get[@DomainName]ById(id) {
+            for (var i = 0; i < vm.[@TableNameLower].length; i++) {
+                var p[@ObjectName] = vm.[@TableNameLower][i];
+                if (p[@ObjectName].Id === id) {
+                    return p[@ObjectName];
+                }
+            }
+            return null;
+        }
+
+
+
+        function get[@TableName]() {
+
+            var criteria = {
+                CurrentPage: vm.currentPage-1,
+                ItemPerPage: vm.itemPerPage,
+                SortColumn: vm.columnName,
+                SortDirection: vm.sortDirection
+            };
+
+            [@TableNameLower]Service.search[@DomainName](criteria).then(function (response) {
+                vm.totalRecords = parseInt(response.headers('X-InlineCount'));
+                vm.[@TableNameLower] = response.data;
+                filter[@TableName](vm.searchText);
+            });
+
+            
+        }
+        /*END*/
+
+
+        vm.changeDisplayMode = function (displayMode) {
+            switch (displayMode) {
+                case vm.DisplayModeEnum.Card:
+                    vm.listDisplayModeEnabled = false;
+                    break;
+                case vm.DisplayModeEnum.List:
+                    vm.listDisplayModeEnabled = true;
+                    break;
+            }
+        };
+
+        initalData();
+
+    };
+
+    [@TableName]Controller.$inject = injectParams;
+
+    app.register.controller('[@TableName]Controller', [@TableName]Controller);
+
+});
